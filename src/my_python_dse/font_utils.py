@@ -84,6 +84,9 @@ string like '-1'.
 is_silent = False
 
 def fonts_in(filenames, close=True, verbose=0, ttc=True, open_font=True, names=False):
+    """Utility function used by a lot of my crappy fontforge scripts.
+
+    """
     if not open_font and not names:
         raise Exception("fonts_in without open_font or names does not make sense")
     global is_silent
