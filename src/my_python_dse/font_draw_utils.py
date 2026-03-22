@@ -4,6 +4,9 @@ X = "X"
 Y = "Y"
 
 def rect(glyph, x1, x2, y1, y2):
+    """Draw a rectangle onto the specified glyph.  Does not clear the glyph first.
+
+    """
     print("rect(%s, %d, %d, %d, %d)" % (glyph, x1, x2, y1, y2))
     pen = glyph.glyphPen(replace=False)
     pen.moveTo((x1, y1))
@@ -14,6 +17,40 @@ def rect(glyph, x1, x2, y1, y2):
     pen = None
 
 def poly(glyph, pairs):
+    """Draw a polygon onto the specified glyph.  Does not clear the glyph first.
+
+    Polygon will be closed.
+
+    The `pairs` argument is a list of x,y coordinate pairs.  The first
+    one is always two numbers.  Each subsequent coordinate pair can be:
+
+    - (<x>, <y>) to draw a line to a new position
+
+    - ("X", <x>) to move horizontally to a new position
+
+    - ("Y", <x>) to move vertically to a new position.
+
+    - ("X", <x>, <y>, <x>, <y>, ...) to move horizontally then
+      alternate between vertical and horizontal.  This is equivalent
+      to the following:
+
+            ("X", x),
+            ("Y", y),
+            ("X", x),
+            ("Y", y),
+            ...
+
+    - ("Y", <y>, <x>, <y>, <x>, ...) to move vertically then alternate
+      between vertical and horizontal.
+
+    - For convenience, I like to define:
+
+          X = "X"
+          Y = "Y"
+
+      so that I can use barewords X and Y instead of strings.
+
+    """
     pen = glyph.glyphPen(replace=False)
     x = pairs[0][0]
     y = pairs[0][1]
@@ -46,6 +83,9 @@ def poly(glyph, pairs):
     pen = None
 
 def clip(glyph, x1, y1, x2, y2):
+    """Clips the foreground layer to the specified rectangle.
+
+    """
     contour = fontforge.contour()
     contour.moveTo((x1, y1))
     contour.lineTo((x2, y1))
@@ -62,12 +102,12 @@ def GA(font, what):
 Returns an array containing a single item, that item being a FontForge
 glyph object.
 
-Used for `for glyph in GA("CHARACTER NAME")` constructs, e.g.,
+Used for `for glyph in GA(font, "CHARACTER NAME")` constructs, e.g.,
 
-    for glyph in GA("BOX DRAWINGS HEAVY TRIPLE DASH VERTICAL"):
+    for glyph in GA(font, "BOX DRAWINGS HEAVY TRIPLE DASH VERTICAL"):
         for i in range(0, 3):
             rect(glyph, x1_heavy, x2_heavy, dash_vert[3][i*2], dash_vert[3][i*2+1])
-    for glyph in GA("BOX DRAWINGS LIGHT QUADRUPLE DASH HORIZONTAL"):
+    for glyph in GA(font, "BOX DRAWINGS LIGHT QUADRUPLE DASH HORIZONTAL"):
         for i in range(0, 4):
             rect(glyph, dash_horiz[4][i*2], dash_horiz[4][i*2+1], y1_light, y2_light)
 
