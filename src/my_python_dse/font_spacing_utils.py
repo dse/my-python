@@ -16,6 +16,16 @@ class FontSpacing(Enum):
             return "dualspace"
         if value == FontSpacing.PROPORTIONAL:
             return "proportional"
+    @classmethod
+    def shortnameof(cls, value):
+        if value == FontSpacing.NONE:
+            return "none"
+        if value == FontSpacing.MONOSPACE:
+            return "mono"
+        if value == FontSpacing.DUALSPACE:
+            return "dual"
+        if value == FontSpacing.PROPORTIONAL:
+            return "prop"
 
 # stolen partially from fontconfig/src/fcfreetype.c
 def approx_equal(x, y, fudge=1.01):
