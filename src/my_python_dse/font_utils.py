@@ -1,9 +1,12 @@
 # font_utils.py
 
-import re, unicodedata, fontforge, os
+import re, unicodedata, os
 from types import SimpleNamespace
 
 import silence
+silence.on()
+import fontforge
+silence.off()
 
 def parse_char(param, throw=False, default=None, _orig=None):
     """Return the codepoint of the supplied single character, Unicode
@@ -81,17 +84,12 @@ string like '-1'.
         return "%-8s" % result
     return result
 
-is_silent = False
-
-def fonts_in(filenames, close=True, verbose=0, ttc=True, open_font=True, names=False):
+def fonts_in(filenames, close=True, verbose=False, ttc=True, open_font=True, names=False):
     """Utility function used by a lot of my crappy fontforge scripts.
 
     """
     if not open_font and not names:
         raise Exception("fonts_in without open_font or names does not make sense")
-    global is_silent
-    if is_silent is None:
-        is_silent = verbose < 2
     for filename in filenames:
         fonts_in_file = fontforge.fontsInFile(filename)
         if (not ttc) and len(fonts_in_file) >= 2:
@@ -118,17 +116,12 @@ def fonts_in(filenames, close=True, verbose=0, ttc=True, open_font=True, names=F
                 yield font_struct
                 continue
             try:
-                if is_silent:
-                    silence(True)
-                print("Opening %s" % font_struct.filename_open)
+                silence.on()
                 font = fontforge.open(font_struct.filename_open)
-                print("Opened")
+                silence.off()
             except Exception as err:
-                if is_silent:
-                    silence(False)
+                silence.off()
                 raise err
-            if is_silent:
-                silence(False)
             if names:
                 if font_struct.fontname is None:
                     font_struct.fontname = font.fontname
