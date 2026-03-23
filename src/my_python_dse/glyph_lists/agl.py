@@ -9,7 +9,7 @@
 # character names.  Some character names map to multiple Unicode code
 # points as there is no single character; those are not included.
 
-__all__ = ["WGL"]
+__all__ = ["AGL"]
 
 AGL = [
     0x0001,
