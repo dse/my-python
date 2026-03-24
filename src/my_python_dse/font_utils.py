@@ -84,7 +84,7 @@ string like '-1'.
         return "%-8s" % result
     return result
 
-def fonts_in(filenames, close=True, verbose=False, ttc=True, open_font=True, names=False):
+def fonts_in(filenames, count=False, close=True, verbose=False, ttc=True, open_font=True, names=False):
     """Utility function used by a lot of my crappy fontforge scripts.
 
     """
@@ -94,8 +94,12 @@ def fonts_in(filenames, close=True, verbose=False, ttc=True, open_font=True, nam
         fonts_in_file = fontforge.fontsInFile(filename)
         if (not ttc) and len(fonts_in_file) >= 2:
             raise Exception("fonts_in: .ttc files not supported when ttc=%s is specified" % repr(ttc))
+        count_result = 0
         font_structs = []
         if len(fonts_in_file) < 2:
+            if count:
+                count_result += 1
+                continue
             font_structs = [SimpleNamespace(
                 filename=filename,
                 filename_open=filename,
@@ -104,6 +108,9 @@ def fonts_in(filenames, close=True, verbose=False, ttc=True, open_font=True, nam
                 ttc=False,
             )]
         else:
+            if count:
+                count_result += len(fonts_in_file)
+                continue
             font_structs = [SimpleNamespace(
                 filename=filename,
                 filename_open="%s(%s)" % (filename, font_in_file),
@@ -131,3 +138,5 @@ def fonts_in(filenames, close=True, verbose=False, ttc=True, open_font=True, nam
                 yield font
             if close:
                 font.close()
+    if count:
+        return count_result
