@@ -90,6 +90,25 @@ def get_font_count(filenames):
 def get_fonts_in(filenames, filenamesonly=False, close=True, verbose=False, ttc=True, open_font=True, names=False):
     """Utility function used by a lot of my crappy fontforge scripts.
 
+If filenamesonly is truthy, only return the list of fonts.  For
+individual font files, list will just contain the font names.  For
+`.ttc` and other multi-font files, list will return arguments of the
+form `FILENAME(FONTNAME)`.
+
+If close is falsy, do not close font files automatically before
+opening the next one.  The close argument is true by default.
+
+If ttc is falsy, do not deal with .ttc or other multi-font filenames.
+This argument is true by default.
+
+If open_font is false, do not open fonts.  This argument is true by
+default.
+
+If names argument is "namespace", return namespace objects containing
+filename, filename_open, fontname, and ttc arguments.  If names
+argument is dict, return dictionary objects.  If names argument is
+false, only return fonts.
+
     """
     if not open_font and not names:
         raise Exception("get_fonts_in without open_font or names does not make sense")
