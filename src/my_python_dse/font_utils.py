@@ -70,7 +70,7 @@ parameter passed to parse_char) is non-negative; otherwise returns a
 string like '-1'.
 
     """
-    codepoint = parse_char(param)
+    codepoint = parse_char(param, default=-1)
     if codepoint < 0:
         if pad:
             if type(pad) == int:
@@ -84,7 +84,10 @@ string like '-1'.
         return "%-8s" % result
     return result
 
-def fonts_in(filenames, count=False, close=True, verbose=False, ttc=True, open_font=True, names=False):
+def get_font_count(filenames):
+    return list(fonts_in(filenames, filenamesonly=True))
+
+def fonts_in(filenames, filenamesonly=False, close=True, verbose=False, ttc=True, open_font=True, names=False):
     """Utility function used by a lot of my crappy fontforge scripts.
 
     """
@@ -94,11 +97,10 @@ def fonts_in(filenames, count=False, close=True, verbose=False, ttc=True, open_f
         fonts_in_file = fontforge.fontsInFile(filename)
         if (not ttc) and len(fonts_in_file) >= 2:
             raise Exception("fonts_in: .ttc files not supported when ttc=%s is specified" % repr(ttc))
-        count_result = 0
         font_structs = []
         if len(fonts_in_file) < 2:
-            if count:
-                count_result += 1
+            if filenamesonly:
+                yield filename
                 continue
             font_structs = [SimpleNamespace(
                 filename=filename,
@@ -108,9 +110,10 @@ def fonts_in(filenames, count=False, close=True, verbose=False, ttc=True, open_f
                 ttc=False,
             )]
         else:
-            if count:
-                count_result += len(fonts_in_file)
-                continue
+            if filenamesonly:
+                for font_in_file in fonts_in_file:
+                    yield font_in_file
+                    continue
             font_structs = [SimpleNamespace(
                 filename=filename,
                 filename_open="%s(%s)" % (filename, font_in_file),
@@ -138,5 +141,10 @@ def fonts_in(filenames, count=False, close=True, verbose=False, ttc=True, open_f
                 yield font
             if close:
                 font.close()
-    if count:
-        return count_result
+
+def get_base_codepoint(glyph, default=-1):
+    base_glyphname = glyph.glyphname.split(".")[0]
+    result = fontforge.unicodeFromName(base_glyphname)
+    if result < 0:
+        return default
+    return result
