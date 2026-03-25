@@ -7,6 +7,7 @@ if "DISABLE_SILENCE" in os.environ:
     disabled = True
 
 def silence(flag=True):
+    global disabled, stderr_fd
     if disabled:
         pass
     elif flag is None:
@@ -33,4 +34,5 @@ def disable():
     silence(None)
 
 def is_silent():
+    global stderr_fd
     return stderr_fd is None
