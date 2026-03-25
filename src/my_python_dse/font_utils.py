@@ -85,18 +85,18 @@ string like '-1'.
     return result
 
 def get_font_count(filenames):
-    return list(fonts_in(filenames, filenamesonly=True))
+    return list(get_fonts_in(filenames, filenamesonly=True))
 
-def fonts_in(filenames, filenamesonly=False, close=True, verbose=False, ttc=True, open_font=True, names=False):
+def get_fonts_in(filenames, filenamesonly=False, close=True, verbose=False, ttc=True, open_font=True, names=False):
     """Utility function used by a lot of my crappy fontforge scripts.
 
     """
     if not open_font and not names:
-        raise Exception("fonts_in without open_font or names does not make sense")
+        raise Exception("get_fonts_in without open_font or names does not make sense")
     for filename in filenames:
         fonts_in_file = fontforge.fontsInFile(filename)
         if (not ttc) and len(fonts_in_file) >= 2:
-            raise Exception("fonts_in: .ttc files not supported when ttc=%s is specified" % repr(ttc))
+            raise Exception("get_fonts_in: .ttc files not supported when ttc=%s is specified" % repr(ttc))
         font_structs = []
         if len(fonts_in_file) < 2:
             if filenamesonly:
@@ -105,7 +105,6 @@ def fonts_in(filenames, filenamesonly=False, close=True, verbose=False, ttc=True
             font_structs = [SimpleNamespace(
                 filename=filename,
                 filename_open=filename,
-                filename_noext=os.path.splitext(filename)[0],
                 fontname=None,
                 ttc=False,
             )]
@@ -117,7 +116,6 @@ def fonts_in(filenames, filenamesonly=False, close=True, verbose=False, ttc=True
             font_structs = [SimpleNamespace(
                 filename=filename,
                 filename_open="%s(%s)" % (filename, font_in_file),
-                filename_noext="%s(%s)" % (os.path.splitext(filename)[0], font_in_file),
                 fontname=font_in_file,
                 ttc=True,
             ) for font_in_file in fonts_in_file]
@@ -142,9 +140,19 @@ def fonts_in(filenames, filenamesonly=False, close=True, verbose=False, ttc=True
             if close:
                 font.close()
 
-def get_base_codepoint(glyph, default=-1):
-    base_glyphname = glyph.glyphname.split(".")[0]
-    result = fontforge.unicodeFromName(base_glyphname)
-    if result < 0:
+def get_base_codepoint(param, default=-1):
+    base_glyphname = None
+    if type(param) == fontforge.glyph:
+        base_glyphname = glyph.glyphname.split(".")[0]
+    elif type(param) == str:
+        base_glyphname = str.split(".")[0]
+    codepoint = fontforge.unicodeFromName(base_glyphname)
+    if codepoint < 0:
         return default
-    return result
+    return codepoint
+
+def get_base_glyphname(param, default=None):
+    codepoint = get_base_codepoint(param, default=None)
+    if codepoint is None:
+        return default
+    return fontforge.nameFromUnicode(codepoint)
