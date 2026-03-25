@@ -94,6 +94,8 @@ def get_fonts_in(filenames, filenamesonly=False, close=True, verbose=False, ttc=
     if not open_font and not names:
         raise Exception("get_fonts_in without open_font or names does not make sense")
     for filename in filenames:
+        if (not ttc) and filename.lower().endswith(".ttc"):
+            raise Exception("get_fonts_in: .ttc files not supported when ttc=%s is specified" % repr(ttc))
         fonts_in_file = fontforge.fontsInFile(filename)
         if (not ttc) and len(fonts_in_file) >= 2:
             raise Exception("get_fonts_in: .ttc files not supported when ttc=%s is specified" % repr(ttc))
