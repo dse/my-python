@@ -1,4 +1,9 @@
-import re, fontforge, unicodedata
+import re, unicodedata
+
+import silence
+silence.on()
+import fontforge
+silence.off()
 
 X = "X"
 Y = "Y"
