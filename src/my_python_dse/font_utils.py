@@ -113,7 +113,7 @@ def get_fonts_in(filenames, filenamesonly=False, close=True, verbose=False, ttc=
         else:
             if filenamesonly:
                 for font_in_file in fonts_in_file:
-                    yield font_in_file
+                    yield "%s(%s)" % (filename, font_in_file)
                     continue
             font_structs = [SimpleNamespace(
                 filename=filename,
