@@ -12,7 +12,6 @@ def rect(glyph, x1, x2, y1, y2):
     """Draw a rectangle onto the specified glyph.  Does not clear the glyph first.
 
     """
-    print("rect(%s, %d, %d, %d, %d)" % (glyph, x1, x2, y1, y2))
     pen = glyph.glyphPen(replace=False)
     pen.moveTo((x1, y1))
     pen.lineTo((x2, y1))
@@ -119,9 +118,13 @@ Used for `for glyph in GA(font, "CHARACTER NAME")` constructs, e.g.,
 for visual separation.
 """
     g = None
+    match = None
     if type(what) == str:
         if len(what) == 1:
             g = font.createChar(ord(what))
+        elif match := re.fullmatch(r'(?:u\+?|0?x)([0-9A-Fa-f]+)', what):
+            codepoint = int(match[1], 16)
+            g = font.createChar(codepoint)
         else:
             g = font.createChar(ord(unicodedata.lookup(what)))
     elif type(what) == int:
