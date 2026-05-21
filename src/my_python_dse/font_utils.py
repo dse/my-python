@@ -87,6 +87,39 @@ string like '-1'.
 def get_font_count(filenames):
     return list(get_fonts_in(filenames, filenamesonly=True))
 
+def get_fonts_from(filenames, with_filenames=False, ttc=True):
+    for filename in filenames:
+        fonts_in_file = fontforge.fontsInFile(filename)
+        if len(fonts_in_file) < 2:
+            try:
+                silence.on()
+                font = fontforge.open(filename)
+                silence.off()
+            except:
+                silence.off()
+                raise
+            if with_filenames:
+                yield [font, filename, filename]
+            else:
+                yield font
+            font.close()
+        elif not ttc:
+            raise Exception("get_fonts_from: this call instructed to not open .ttc files")
+        else:
+            for font_in_file in fonts_in_file:
+                try:
+                    silence.on()
+                    font = fontforge.open(font_in_file)
+                    silence.off()
+                except:
+                    silence.off()
+                    raise
+                if with_filenames:
+                    yield [font, filename, font_in_file]
+                else:
+                    yield font
+                font.close()
+
 def get_fonts_in(filenames, filenamesonly=False, close=True, verbose=False, ttc=True, open_font=True, names=False):
     """Utility function used by a lot of my crappy fontforge scripts.
 
