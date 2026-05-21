@@ -1,4 +1,4 @@
-import re, unicodedata
+import re, unicodedata, math
 
 import silence
 silence.on()
@@ -8,15 +8,23 @@ silence.off()
 X = "X"
 Y = "Y"
 
-def rect(glyph, x1, x2, y1, y2):
+def rect(glyph, x1, x2, y1, y2, clockwise=True):
     """Draw a rectangle onto the specified glyph.  Does not clear the glyph first.
 
     """
+    (x1, x2) = (min(x1, x2), max(x1, x2))
+    (y1, y2) = (min(y1, y2), max(y1, y2))
     pen = glyph.glyphPen(replace=False)
-    pen.moveTo((x1, y1))
-    pen.lineTo((x2, y1))
-    pen.lineTo((x2, y2))
-    pen.lineTo((x1, y2))
+    if clockwise:
+        pen.moveTo((x1, y2))
+        pen.lineTo((x2, y2))
+        pen.lineTo((x2, y1))
+        pen.lineTo((x1, y1))
+    else:
+        pen.moveTo((x1, y2))
+        pen.lineTo((x1, y1))
+        pen.lineTo((x2, y1))
+        pen.lineTo((x2, y2))
     pen.closePath()
     pen = None
 
@@ -122,7 +130,7 @@ for visual separation.
     if type(what) == str:
         if len(what) == 1:
             g = font.createChar(ord(what))
-        elif match := re.fullmatch(r'(?:u\+?|0?x)([0-9A-Fa-f]+)', what):
+        elif match := re.fullmatch(r'(?:u\+?|0?x)([0-9A-Fa-f]+)', what, re.IGNORECASE):
             codepoint = int(match[1], 16)
             g = font.createChar(codepoint)
         else:
@@ -132,4 +140,5 @@ for visual separation.
     else:
         raise Exception("GA: invalid argument type")
     g.clear()
+    g.width = font["H"].width
     return [g]
