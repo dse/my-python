@@ -47,13 +47,17 @@ can be used for other purposes too.
         if type(param) == str:
             if len(param) == 1:
                 return ord(param)
+            if len(param) == 2 and ord(param[0]) in range(0xd800, 0xdc00) and ord(param[1]) in range(0xdc00, 0xe000):
+                # UTF-16 high and low surrogates
+                codepoint = 0x10000 + (ord(param[0]) - 0xd800) * 1024 + ord(param[1]) - 0xdc00
+                return codepoint
             if match := re.fullmatch(r'(?:u\+?|0?x)([0-9a-f]+)', param, re.IGNORECASE):
                 return parse_char(int(match[1], 16), **kwargs)
             try:
                 return ord(unicodedata.lookup(param.upper()))
             except KeyError:
                 pass
-            codepoint = fontforge.unicodeFromName(param)
+            codepoint = fontforge.unicodeFromName(param.split(".")[0])
             if codepoint in range(0, 0x110000):
                 return codepoint
             raise ValueError("invalid character spec: %s" % repr(_orig))
