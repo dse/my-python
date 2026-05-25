@@ -201,7 +201,9 @@ false, only return fonts.
 def get_base_codepoint(param, default=-1):
     base_glyphname = None
     if type(param) == fontforge.glyph:
-        base_glyphname = glyph.glyphname.split(".")[0]
+        if param.unicode in range(0, 0x110000):
+            return param.unicode
+        base_glyphname = param.glyphname.split(".")[0]
     elif type(param) == str:
         base_glyphname = str.split(".")[0]
     codepoint = fontforge.unicodeFromName(base_glyphname)
@@ -214,3 +216,9 @@ def get_base_glyphname(param, default=None):
     if codepoint is None:
         return default
     return fontforge.nameFromUnicode(codepoint)
+
+def get_variant_name(glyph):
+    splitz = glyph.glyphname.split(".", 1)
+    if len(splitz) > 1:
+        return splitz[1]
+    return None
