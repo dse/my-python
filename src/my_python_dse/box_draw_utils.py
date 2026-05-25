@@ -176,6 +176,10 @@ def draw_light_lower_left_arc(glyph, arc_type=ARC_TYPE_A, clockwise=True):
 def draw_light_lower_right_arc(glyph, arc_type=ARC_TYPE_A, clockwise=True):
     draw_light_arc(glyph, upper=False, left=False, arc_type=arc_type, clockwise=clockwise)
 
+def draw_dot(glyph, clockwise=True):
+    global light_stroke_width
+    draw_heavy_circle(glyph, r = light_stroke_width * 1.25)
+
 def draw_heavy_circle(glyph, r=None, clockwise=True):
     if r is None:
         r = heavy_circle_radius * glyph.width / 2
